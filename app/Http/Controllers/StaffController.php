@@ -5,6 +5,7 @@ use App\Http\Requests\StoreStaffRequest;
 use App\Http\Requests\UpdateStaffRequest;
 use App\Models\User;
 use App\Services\StaffService;
+use Illuminate\Support\Facades\Auth;
 
 class StaffController extends Controller
 {
@@ -85,6 +86,11 @@ protected StaffService $staffService;
         $this->staffService->delete($user);
 
         return redirect()->route('staff.index')->with('success', 'Staff member deleted successfully');
+    }
+    public function getStaffBloodBanks()
+    {
+        $bloodBanks = $this->staffService->getAssignedBloodBanks(Auth::id());
+        return view('staff.index', compact('bloodBanks'));
     }
 }
 

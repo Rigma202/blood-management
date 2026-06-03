@@ -1,0 +1,83 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+
+use App\Services\BloodBagService;
+use App\Models\BloodBag;
+use App\Http\Requests\StoreBloodBagRequest;
+use App\Http\Requests\UpdateBloodBagRequest;
+
+class BloodBagController extends Controller
+{
+    protected BloodBagService $service;
+
+    public function __construct(BloodBagService $service)
+    {
+        $this->service = $service;
+    }
+
+    public function index()
+    {
+        $bloodBags = $this->service->getAll();
+        return view('bloodbag.index', compact('bloodBags'));
+    }
+
+    public function create()
+    {
+        $userId = Auth::id();
+        $bloodBanks = $this->service->getUserBloodBanksWithRefrigerators($userId);
+        return view('bloodbag.create', compact('bloodBanks'));
+    }
+
+    public function refrigeratorsByBank(Request $request)
+    {
+        $request->validate([
+            'blood_bank_id' => 'required|integer'
+        ]);
+
+        $userId = Auth::id();
+        $bankId = (int) $request->input('blood_bank_id');
+
+        $refrigerators = $this->service->getRefrigeratorsForUserAndBank($userId, $bankId);
+
+        return response()->json($refrigerators);
+    }
+
+    public function store(StoreBloodBagRequest $request)
+    {
+        $data = $request->validated();
+        $this->service->create($data);
+
+        if ($request->expectsJson() || $request->ajax()) {
+            return response()->json(['success' => true, 'message' => 'Blood bag created successfully']);
+        }
+
+        return redirect()->route('blood-bags.index')
+            ->with('success', 'Blood bag created successfully');
+    }
+
+    public function update(
+        BloodBag $bloodBag,
+        UpdateBloodBagRequest $request
+    ) {
+        $data = $request->validated();
+        $bloodBag = $this->service->update($bloodBag, $data);
+
+        return redirect()->route('blood-bags.index')
+            ->with('success', 'Blood bag updated successfully');
+    }
+
+    public function delete(BloodBag $bloodBag)
+    {
+        $bloodBag->delete();
+        return redirect()->route('blood-bags.index')->with('success', 'Blood bag deleted');
+    }
+
+    public function findById($id)
+    {
+        return $this->service->findById($id);
+    }
+}

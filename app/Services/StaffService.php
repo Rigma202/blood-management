@@ -58,4 +58,14 @@ class StaffService
     {
         return $user->delete();
     }
+    public function getAssignedBloodBanks($id)
+    {
+        return User::find($id)
+            ->bloodBanks()
+            ->select(
+                'blood_banks.name',
+                'blood_banks.location'
+            )
+            ->get();
+    }
 }

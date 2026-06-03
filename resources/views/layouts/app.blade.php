@@ -45,7 +45,11 @@
 
     {{-- STAFF MENU --}}
     @if(auth()->user()->role === 'staff')
-
+        <li class="nav-item mb-2">
+            <a href="{{ route('staff.blood-banks') }}" class="nav-link text-white">
+                Blood Banks
+            </a>
+        </li>
         <li class="nav-item mb-2">
             <a href="{{ route('refrigerators.index') }}" class="nav-link text-white">
                 Refrigerators
@@ -53,14 +57,14 @@
         </li>
 
         <li class="nav-item mb-2">
-            <a href="{{ route('temperature-logs.index') }}" class="nav-link text-white">
+            <a href="" class="nav-link text-white">
                 Temperature Logs
             </a>
         </li>
 
         <li class="nav-item mb-2">
-            <a href="{{ route('donors.index') }}" class="nav-link text-white">
-                Donors
+            <a href="{{ route('blood-bags.index') }}" class="nav-link text-white">
+                Blood Bags
             </a>
         </li>
 
