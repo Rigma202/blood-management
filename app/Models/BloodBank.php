@@ -9,7 +9,9 @@ class BloodBank extends Model
 
     protected $fillable = [
         'name',
-        'location'
+        'location',
+        'email',
+        'contact_number'
     ];
 
     public function refrigerators()
