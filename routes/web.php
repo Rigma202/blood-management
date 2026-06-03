@@ -1,9 +1,10 @@
 <?php
 
 use App\Http\Controllers\BloodBankController;
+use App\Http\Controllers\StaffController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
-
+use Illuminate\Support\Facades\Mail;
 Route::get('/', function () {
     return view('welcome');
 });
@@ -15,6 +16,7 @@ Route::middleware('auth')->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
     Route::resource('blood-banks', BloodBankController::class);
+    Route::resource('staff', StaffController::class);
 
 });
 
