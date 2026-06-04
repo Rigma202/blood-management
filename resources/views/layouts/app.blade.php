@@ -71,7 +71,11 @@
                 Blood Bags
             </a>
         </li>
-
+        <li class="nav-item mb-2">
+            <a href="{{ route('blood-bags.expiry-dashboard') }}" class="nav-link text-white">
+                Expiry Dashboard
+            </a>
+        </li>
     @endif
 
 

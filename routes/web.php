@@ -24,6 +24,8 @@ Route::middleware('auth')->group(function () {
     ->name('refrigerators.logs.data');
     Route::get('refrigerators/daily-analysis', [RefrigeratorController::class, 'dailyAnalysis'])
     ->name('refrigerators.dailyAnalysis');
+    Route::get('blood-bags/expiry-dashboard', [BloodBagController::class, 'expiryDashboard'])
+    ->name('blood-bags.expiry-dashboard');
     Route::resource('blood-bags', bloodBagController::class);
     Route::resource('blood-banks', BloodBankController::class);
     Route::get('/staff/blood-banks',[StaffController::class, 'getStaffBloodBanks'])->name('staff.blood-banks');

@@ -4,19 +4,22 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-
+use App\Models\Refrigerator;
 use App\Services\BloodBagService;
 use App\Models\BloodBag;
 use App\Http\Requests\StoreBloodBagRequest;
 use App\Http\Requests\UpdateBloodBagRequest;
+use App\Services\BloodExpiryService;
 
 class BloodBagController extends Controller
 {
     protected BloodBagService $service;
+    protected BloodExpiryService $expiryService;
 
-    public function __construct(BloodBagService $service)
+    public function __construct(BloodBagService $service,BloodExpiryService $expiryService)
     {
         $this->service = $service;
+        $this->expiryService = $expiryService;
     }
 
     public function index()
@@ -80,4 +83,26 @@ class BloodBagController extends Controller
     {
         return $this->service->findById($id);
     }
+     public function expiryDashboard(Request $request)
+    {
+        $userId = Auth::id();
+        $bloodBanks = $this->service->getUserBloodBanksWithRefrigerators($userId);
+        $refrigerators = $bloodBanks->flatMap(fn($bank) => $bank->refrigerators);
+        $selectedRefrigerator = null;
+        $summary = null;
+
+        if ($request->filled('refrigerator_id')) {
+            $selectedRefrigerator = Refrigerator::find($request->input('refrigerator_id'));
+            if ($selectedRefrigerator) {
+                $summary = $this->expiryService->summary($selectedRefrigerator);
+            }
+        }
+
+        return view('bloodbag.blood-expiry-dashboard', compact(
+            'refrigerators',
+            'selectedRefrigerator',
+            'summary'
+        ));
+    }
+
 }
