@@ -8,27 +8,30 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\View\View;
-
+use App\Services\DashboardService;
 class ProfileController extends Controller
 {
     /**
      * Display the user's profile form.
      */
+    protected DashboardService $dashboardService;
+
+    public function __construct(DashboardService $dashboardService)
+    {
+        $this->dashboardService = $dashboardService;
+    }
     public function index(Request $request)
     {
         if (Auth::check()) {
             $user = Auth::user();
-            if ($user->role === 'admin') {
-                return view('admin.dashboard');
-            } elseif ($user->role === 'staff') {
-                return view('staff.dashboard');
-            }
-            elseif ($user->role === 'monitoring_user') {
-                return view('monitor-user.dashboard');
-            }
-            else {
-                return view('/');
-            }
+            $dashboardData = $this->dashboardService->getDashboardSummary();
+
+            return match ($user->role) {
+                'admin' => view('admin.dashboard', compact('dashboardData')),
+                'staff' => view('staff.dashboard', compact('dashboardData')),
+                'monitoring_user' => view('monitor-user.dashboard', compact('dashboardData')),
+                default => abort(403),
+            };
         }
     }
     public function edit(Request $request): View
