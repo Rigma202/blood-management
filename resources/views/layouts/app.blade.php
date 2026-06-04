@@ -57,11 +57,15 @@
         </li>
 
         <li class="nav-item mb-2">
-            <a href="" class="nav-link text-white">
-                Temperature Logs
-            </a>
+        <a href="{{ route('refrigerators.logs') }}" class="nav-link text-white">
+            Temperature Logs
+        </a>
         </li>
-
+        <li class="nav-item mb-2">
+        <a href="{{ route('refrigerators.dailyAnalysis') }}" class="nav-link text-white">
+            Daily Analysis
+        </a>
+        </li>
         <li class="nav-item mb-2">
             <a href="{{ route('blood-bags.index') }}" class="nav-link text-white">
                 Blood Bags

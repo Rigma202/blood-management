@@ -18,6 +18,12 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
     Route::get('refrigerators/by-bank', [App\Http\Controllers\BloodBagController::class, 'refrigeratorsByBank'])
     ->name('refrigerators.byBank');
+    Route::get('refrigerators/logs', [RefrigeratorController::class, 'logsPage'])
+    ->name('refrigerators.logs');
+    Route::get('refrigerators/{refrigerator}/logs', [RefrigeratorController::class, 'logsData'])
+    ->name('refrigerators.logs.data');
+    Route::get('refrigerators/daily-analysis', [RefrigeratorController::class, 'dailyAnalysis'])
+    ->name('refrigerators.dailyAnalysis');
     Route::resource('blood-bags', bloodBagController::class);
     Route::resource('blood-banks', BloodBankController::class);
     Route::get('/staff/blood-banks',[StaffController::class, 'getStaffBloodBanks'])->name('staff.blood-banks');
