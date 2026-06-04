@@ -75,7 +75,31 @@ class BloodBagController extends Controller
 
     public function delete(BloodBag $bloodBag)
     {
+        return $this->destroy(request(), $bloodBag);
+    }
+
+    public function destroy(Request $request, BloodBag $bloodBag)
+    {
+        if ($bloodBag->status !== 'expired') {
+            $message = 'Only expired blood bags can be deleted.';
+
+            if ($request->expectsJson() || $request->ajax()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => $message,
+                    'status' => $bloodBag->status,
+                ], 422);
+            }
+
+            return redirect()->route('blood-bags.index')->with('error', $message);
+        }
+
         $bloodBag->delete();
+
+        if ($request->expectsJson() || $request->ajax()) {
+            return response()->json(['success' => true, 'message' => 'Blood bag deleted successfully']);
+        }
+
         return redirect()->route('blood-bags.index')->with('success', 'Blood bag deleted');
     }
 

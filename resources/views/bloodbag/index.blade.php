@@ -47,13 +47,13 @@
 
                                 <form action="{{ route('blood-bags.destroy', $bag->id) }}"
                                       method="POST"
+                                      class="delete-bloodbag-form"
                                       style="display:inline-block;">
                                     @csrf
                                     @method('DELETE')
 
                                     <button type="submit"
-                                            class="btn btn-danger btn-sm"
-                                            onclick="return confirm('Are you sure?')">
+                                            class="btn btn-danger btn-sm">
                                         Delete
                                     </button>
                                 </form>
@@ -77,3 +77,56 @@
 </div>
 
 @endsection
+
+@push('scripts')
+<script>
+$(function () {
+    $('form.delete-bloodbag-form').submit(function (e) {
+        e.preventDefault();
+
+        const $form = $(this);
+
+        Swal.fire({
+            title: 'Delete blood bag?',
+            text: 'Only expired blood bags may be deleted.',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            confirmButtonText: 'Yes, delete it',
+            cancelButtonText: 'Cancel'
+        }).then((result) => {
+            if (!result.isConfirmed) {
+                return;
+            }
+
+            $.ajax({
+                url: $form.attr('action'),
+                type: 'POST',
+                data: $form.serialize(),
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content'),
+                    'Accept': 'application/json'
+                },
+                success: function (response) {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Deleted',
+                        text: response.message || 'Blood bag deleted successfully'
+                    }).then(() => {
+                        location.reload();
+                    });
+                },
+                error: function (xhr) {
+                    const data = xhr.responseJSON || {};
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Unable to delete',
+                        text: data.message || 'Only expired blood bags can be deleted.'
+                    });
+                }
+            });
+        });
+    });
+});
+</script>
+@endpush

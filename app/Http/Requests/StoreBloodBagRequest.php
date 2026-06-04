@@ -57,6 +57,16 @@ class StoreBloodBagRequest extends FormRequest
             'status' => [
                 'required',
                 'in:available,reserved,used,expired'
+            ],
+
+            'is_tested' => [
+                'required',
+                'accepted'
+            ],
+
+            'is_secure' => [
+                'required',
+                'accepted'
             ]
         ];
     }

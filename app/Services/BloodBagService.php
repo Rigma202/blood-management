@@ -48,7 +48,9 @@ class BloodBagService
             'collection_date' => $data['collection_date'],
             'expiry_date'     => $data['expiry_date'],
             'quantity'        => $data['quantity'],
-            'status'          => $data['status']
+            'status'          => $data['status'],
+            'is_tested'       => $data['is_tested'],
+            'is_secure'       => $data['is_secure']
         ]);
     }
 
@@ -62,7 +64,9 @@ class BloodBagService
             'collection_date' => $data['collection_date'],
             'expiry_date'     => $data['expiry_date'],
             'quantity'        => $data['quantity'],
-            'status'          => $data['status']
+            'status'          => $data['status'],
+            'is_tested'       => $data['is_tested'] ?? $bloodBag->is_tested,
+            'is_secure'       => $data['is_secure'] ?? $bloodBag->is_secure
         ]);
 
         return $bloodBag;

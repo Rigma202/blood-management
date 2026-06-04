@@ -4,7 +4,7 @@
 
 <div class="container d-flex justify-content-center mt-5">
 
-    <div class="card shadow p-4" style="width: 450px;">
+    <div class="card shadow p-4" style="width: 100%; max-width: 900px;">
 
         <h2 class="text-center mb-4">Add Blood Bag</h2>
 
@@ -12,76 +12,94 @@
 
             @csrf
 
-            <div class="mb-3">
-                <label class="form-label">Blood Bank</label>
-                <select id="blood_bank_id" name="blood_bank_id" class="form-control select2">
-                    <option value="">Select blood bank</option>
-                    @foreach($bloodBanks as $bank)
-                        <option value="{{ $bank->id }}">{{ $bank->name }}</option>
-                    @endforeach
-                </select>
-                <small id="blood_bank_id_error" class="text-danger"></small>
-            </div>
+            <div class="row gx-3 gy-3">
+                <div class="col-md-6">
+                    <label class="form-label">Blood Bank</label>
+                    <select id="blood_bank_id" name="blood_bank_id" class="form-control select2">
+                        <option value="">Select blood bank</option>
+                        @foreach($bloodBanks as $bank)
+                            <option value="{{ $bank->id }}">{{ $bank->name }}</option>
+                        @endforeach
+                    </select>
+                    <small id="blood_bank_id_error" class="text-danger"></small>
+                </div>
 
-            <div class="mb-3">
-                <label class="form-label">Refrigerator</label>
-                <select id="refrigerator_id" name="refrigerator_id" class="form-control">
-                    <option value="">Select refrigerator</option>
-                </select>
-                <small id="refrigerator_id_error" class="text-danger"></small>
-            </div>
+                <div class="col-md-6">
+                    <label class="form-label">Refrigerator</label>
+                    <select id="refrigerator_id" name="refrigerator_id" class="form-control">
+                        <option value="">Select refrigerator</option>
+                    </select>
+                    <small id="refrigerator_id_error" class="text-danger"></small>
+                </div>
 
-            <div class="mb-3">
-                <label class="form-label">Bag Number</label>
-                <input type="text" name="bag_number" id="bag_number" class="form-control form-control-sm">
-                <small class="text-danger" id="bag_number_error"></small>
-            </div>
+                <div class="col-md-6">
+                    <label class="form-label">Bag Number</label>
+                    <input type="text" name="bag_number" id="bag_number" class="form-control form-control-sm">
+                    <small class="text-danger" id="bag_number_error"></small>
+                </div>
 
-            <div class="mb-3">
-                <label class="form-label">Donor Name</label>
-                <input type="text" name="donor_name" id="donor_name" class="form-control form-control-sm">
-                <small class="text-danger" id="donor_name_error"></small>
-            </div>
+                <div class="col-md-6">
+                    <label class="form-label">Donor Name</label>
+                    <input type="text" name="donor_name" id="donor_name" class="form-control form-control-sm">
+                    <small class="text-danger" id="donor_name_error"></small>
+                </div>
 
-            <div class="mb-3">
-                <label class="form-label">Blood Group</label>
-                <input type="text" name="blood_group" id="blood_group" class="form-control form-control-sm">
-                <small class="text-danger" id="blood_group_error"></small>
-            </div>
+                <div class="col-md-6">
+                    <label class="form-label">Blood Group</label>
+                    <input type="text" name="blood_group" id="blood_group" class="form-control form-control-sm">
+                    <small class="text-danger" id="blood_group_error"></small>
+                </div>
 
-            <div class="mb-3">
-                <label class="form-label">Quantity</label>
-                <input type="number" name="quantity" id="quantity" class="form-control form-control-sm" min="1">
-                <small class="text-danger" id="quantity_error"></small>
-            </div>
+                <div class="col-md-6">
+                    <label class="form-label">Quantity mL</label>
+                    <input type="number" name="quantity" id="quantity" class="form-control form-control-sm" min="1">
+                    <small class="text-danger" id="quantity_error"></small>
+                </div>
 
-            <div class="mb-3">
-                <label class="form-label">Collection Date</label>
-                <input type="date" name="collection_date" id="collection_date" class="form-control form-control-sm">
-                <small class="text-danger" id="collection_date_error"></small>
-            </div>
+                <div class="col-md-6">
+                    <label class="form-label">Collection Date</label>
+                    <input type="date" name="collection_date" id="collection_date" class="form-control form-control-sm">
+                    <small class="text-danger" id="collection_date_error"></small>
+                </div>
 
-            <div class="mb-3">
-                <label class="form-label">Expiry Date</label>
-                <input type="date" name="expiry_date" id="expiry_date" class="form-control form-control-sm">
-                <small class="text-danger" id="expiry_date_error"></small>
-            </div>
+                <div class="col-md-6">
+                    <label class="form-label">Expiry Date</label>
+                    <input type="date" name="expiry_date" id="expiry_date" class="form-control form-control-sm" min="{{ date('Y-m-d', strtotime('+1 day')) }}">
+                    <small class="text-danger" id="expiry_date_error"></small>
+                </div>
 
-            <div class="mb-3">
-                <label class="form-label">Status</label>
-                <select id="status" name="status" class="form-control form-control-sm">
-                    <option value="">Select status</option>
-                    <option value="available">Available</option>
-                    <option value="reserved">Reserved</option>
-                    <option value="used">Used</option>
-                    <option value="expired">Expired</option>
-                </select>
-                <small class="text-danger" id="status_error"></small>
-            </div>
+                <div class="col-md-6">
+                    <label class="form-label">Status</label>
+                    <select id="status" name="status" class="form-control form-control-sm">
+                        <option value="">Select status</option>
+                        <option value="available">Available</option>
+                        <option value="reserved">Reserved</option>
+                        <option value="used">Used</option>
+                        <option value="expired">Expired</option>
+                    </select>
+                    <small class="text-danger" id="status_error"></small>
+                </div>
 
-            <div class="text-center">
-                <a href="{{ route('blood-bags.index') }}" class="btn btn-danger btn-sm px-4">Cancel</a>
-                <button type="submit" class="btn btn-success btn-sm px-4">Save</button>
+                <div class="col-md-6">
+                    <div class="form-check mt-3">
+                        <input class="form-check-input" type="checkbox" id="is_tested" name="is_tested" value="1">
+                        <label class="form-check-label" for="is_tested">Blood tested</label>
+                    </div>
+                    <small class="text-danger" id="is_tested_error"></small>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="form-check mt-3">
+                        <input class="form-check-input" type="checkbox" id="is_secure" name="is_secure" value="1">
+                        <label class="form-check-label" for="is_secure">Secure for donation</label>
+                    </div>
+                    <small class="text-danger" id="is_secure_error"></small>
+                </div>
+
+                <div class="col-12 text-center mt-3">
+                    <a href="{{ route('blood-bags.index') }}" class="btn btn-danger btn-sm px-4 me-2">Cancel</a>
+                    <button type="submit" class="btn btn-success btn-sm px-4">Save</button>
+                </div>
             </div>
 
         </form>
@@ -149,8 +167,8 @@ $('#bloodBagForm').submit(function(e){
             quantity: $('#quantity').val(),
             collection_date: $('#collection_date').val(),
             expiry_date: $('#expiry_date').val(),
-            status: $('#status').val(),
-            blood_bank_id: $('#blood_bank_id').val()
+            status: $('#status').val(),            is_tested: $('#is_tested').is(':checked') ? 1 : 0,
+            is_secure: $('#is_secure').is(':checked') ? 1 : 0,            blood_bank_id: $('#blood_bank_id').val()
         },
         headers: {
             'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content'),

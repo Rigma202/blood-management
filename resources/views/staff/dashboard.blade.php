@@ -6,31 +6,31 @@
 
     <div class="row gy-3">
         <div class="col-md-2">
-            <div class="card p-3 bg-primary text-white">
+            <div class="card p-3 bg-primary">
                 <div class="text-muted">Total Bags</div>
                 <h4>{{ $dashboardData['total_bags'] }}</h4>
             </div>
         </div>
         <div class="col-md-2">
-            <div class="card p-3 bg-success text-white">
+            <div class="card p-3 bg-success">
                 <div class="text-muted">Active Fridges</div>
                 <h4>{{ $dashboardData['active_fridges'] }}</h4>
             </div>
         </div>
         <div class="col-md-2">
-            <div class="card p-3 bg-warning text-white">
+            <div class="card p-3 bg-warning">
                 <div class="text-muted">Expired Bags</div>
                 <h4>{{ $dashboardData['expired_bags'] }}</h4>
             </div>
         </div>
         <div class="col-md-2">
-            <div class="card p-3 bg-info text-white">
+            <div class="card p-3 bg-info">
                 <div class="text-muted">Health Score</div>
                 <h4>{{ $dashboardData['health_score'] }}%</h4>
             </div>
         </div>
         <div class="col-md-2">
-            <div class="card p-3 bg-secondary text-white">
+            <div class="card p-3 bg-secondary">
                 <div class="text-muted">Avg Temp Today</div>
                 <h4>{{ $dashboardData['avg_temp_today'] ?? 'N/A' }}°C</h4>
             </div>

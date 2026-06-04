@@ -14,12 +14,16 @@ class BloodBag extends Model
         'collection_date',
         'expiry_date',
         'quantity',
-        'status'
+        'status',
+        'is_tested',
+        'is_secure'
     ];
 
     protected $casts = [
         'collection_date' => 'date',
-        'expiry_date' => 'date'
+        'expiry_date' => 'date',
+        'is_tested' => 'boolean',
+        'is_secure' => 'boolean'
     ];
 
     public function refrigerator()
