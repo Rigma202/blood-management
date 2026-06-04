@@ -6,6 +6,7 @@ use App\Http\Requests\StoreBloodBankRequest;
 use App\Http\Requests\UpdateBloodBankRequest;
 use App\Models\BloodBank;
 use App\Services\BloodBankService;
+use Illuminate\Http\Request;
 
 class BloodBankController extends Controller
 {
@@ -80,10 +81,27 @@ class BloodBankController extends Controller
     /**
      * Delete blood bank
      */
-    public function destroy(BloodBank $bloodBank)
+    public function destroy(Request $request, BloodBank $bloodBank)
     {
+        $activeRefrigerators = $bloodBank->refrigerators()
+            ->where('is_active', true)
+            ->pluck('name');
+
+        if ($activeRefrigerators->isNotEmpty() && !$request->boolean('confirm')) {
+
+            return response()->json([
+                'status'  => 'warning',
+                'message' => 'This blood bank has active refrigerators: '
+                    . $activeRefrigerators->implode(', ')
+                    . '. Are you sure you want to delete it?'
+            ], 409);
+        }
+
         $this->bloodBankService->delete($bloodBank);
 
-        return redirect()->route('blood-banks.index')->with('success', 'Blood bank deleted successfully');
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Blood bank deleted successfully.'
+        ]);
     }
 }

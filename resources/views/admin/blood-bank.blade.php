@@ -65,9 +65,10 @@
 @endsection
 @push('scripts')
 <script>
-$(document).on('submit', '.delete-form', function(e){
+$(document).on('submit', '.delete-form', function(e) {
     e.preventDefault();
-    let form = this;
+    let form = $(this);
+    let url = form.attr('action');
     Swal.fire({
         title: "Are you sure?",
         text: "This blood bank will be deleted permanently!",
@@ -78,9 +79,88 @@ $(document).on('submit', '.delete-form', function(e){
         confirmButtonText: "Yes, delete it!"
     }).then((result) => {
 
-        if (result.isConfirmed) {
-            form.submit();
+        if (!result.isConfirmed) {
+            return;
         }
+
+        $.ajax({
+            url: url,
+            type: 'POST',
+            data: form.serialize(),
+
+            success: function(response) {
+
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Success',
+                    text: response.message
+                }).then(() => {
+                    location.reload();
+                });
+
+            },
+
+            error: function(xhr) {
+
+                if (xhr.status === 409) {
+
+                    Swal.fire({
+                        title: 'Active Refrigerators Found',
+                        text: xhr.responseJSON.message,
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonColor: "#d33",
+                        cancelButtonColor: "#3085d6",
+                        confirmButtonText: 'Delete Anyway'
+                    }).then((result) => {
+
+                        if (!result.isConfirmed) {
+                            return;
+                        }
+
+                        $.ajax({
+                            url: url,
+                            type: 'POST',
+                            data: form.serialize() + '&confirm=true',
+
+                            success: function(response) {
+
+                                Swal.fire({
+                                    icon: 'success',
+                                    title: 'Deleted',
+                                    text: response.message
+                                }).then(() => {
+                                    location.reload();
+                                });
+
+                            },
+
+                            error: function(xhr) {
+
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: 'Error',
+                                    text: xhr.responseJSON?.message ??
+                                          'Unable to delete blood bank.'
+                                });
+
+                            }
+                        });
+
+                    });
+
+                } else {
+
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: xhr.responseJSON?.message ??
+                              'Something went wrong.'
+                    });
+
+                }
+            }
+        });
 
     });
 
