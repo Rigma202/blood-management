@@ -51,6 +51,48 @@ This helps staff quickly assess blood availability, storage health, and urgent t
 - jQuery
 - MySQL
 
+## Database and Tables
+
+This project uses a MySQL-compatible database. Below are the main tables and important columns.
+
+- **blood_bags**
+  - `id` (bigint, PK) — primary key
+  - `blood_group` (string) — e.g. A+, O-
+  - `donor_name` (string, nullable)
+  - `quantity` (integer)
+  - `status` (string) — e.g. `available`, `used`, `expired`
+  - `expiry_date` (date)
+  - `is_tested` (boolean) — must be true before saving donation
+  - `is_secure` (boolean) — must be true before saving donation
+  - `blood_bank_id` (bigint, FK)
+  - `refrigerator_id` (bigint, FK, nullable)
+  - `created_at`, `updated_at` (timestamps)
+
+- **blood_banks**
+  - `id`, `name` (string), `location` (string), `contact_email` (string), timestamps
+
+- **blood_bank_users**
+  - `id`, `blood_bank_id` (FK), `user_id` (FK), `role` (string), timestamps
+
+- **refrigerators**
+  - `id`, `name` (string), `blood_bank_id` (FK), `is_active` (boolean), `min_temp` (decimal), `max_temp` (decimal), timestamps
+
+- **temperature_logs**
+  - `id`, `refrigerator_id` (FK), `temperature` (decimal), `recorded_at` (datetime), timestamps
+
+- **temperature_alerts**
+  - `id`, `temperature_log_id` (FK), `refrigerator_id` (FK), `level` (string), `message` (text), `resolved_at` (datetime, nullable), timestamps
+
+- **users**
+  - `id`, `name`, `email`, `password`, `role` (admin|staff|monitoring_user), `email_verified_at`, timestamps
+
+Notes:
+- The `is_tested` and `is_secure` boolean fields were added by a migration and are required when creating a blood bag (validation enforced in the request/controller).
+- Deletion of blood bag records is restricted to bags with `status = 'expired'` (enforced server-side).
+
+Migrations:
+```bash
+php artisan migrate
 
 ## Setup
 
