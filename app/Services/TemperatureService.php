@@ -6,21 +6,41 @@ namespace App\Services;
 
 use App\Models\TemperatureLog;
 use Carbon\Carbon;
-
+use App\Jobs\SendCriticalTemperatureAlertJob;
+use App\Models\TemperatureAlert;
 class TemperatureService
 {
  
-    public function log(
-        int $refrigeratorId,
-        float $temperature,
-        ?string $recordedAt = null
-    ): TemperatureLog {
-        return TemperatureLog::create([
-            'refrigerator_id' => $refrigeratorId,
-            'temperature'     => $temperature,
-            'recorded_at'     => $recordedAt ?? now(),
-        ]);
+public function log(int $refrigeratorId,float $temperature, ?string $recordedAt = null): TemperatureLog 
+{
+    $log = TemperatureLog::create([
+        'refrigerator_id' => $refrigeratorId,
+        'temperature'     => $temperature,
+        'recorded_at'     => $recordedAt ?? now(),
+    ]);
+
+    if ($this->isCriticalFor10Minutes($refrigeratorId)) {
+        $recentAlert = TemperatureAlert::where('refrigerator_id', $refrigeratorId)
+            ->where('notified', true)
+            ->latest('created_at')
+            ->first();
+
+        $shouldCreateAlert = ! $recentAlert
+            || $recentAlert->created_at->lt(now()->subMinutes(10));
+
+        if ($shouldCreateAlert) {
+            $alert = TemperatureAlert::create([
+                'refrigerator_id' => $refrigeratorId,
+                'temperature'     => $temperature,
+                'recorded_at'     => $log->recorded_at,
+            ]);
+
+            SendCriticalTemperatureAlertJob::dispatch($alert);
+        }
     }
+
+    return $log;
+}
 
 
     public function dailyAnalysis(int $refrigeratorId, ?string $date = null): array
@@ -54,14 +74,14 @@ class TemperatureService
     {
         $recentLogs = TemperatureLog::where('refrigerator_id', $refrigeratorId)
             ->orderByDesc('recorded_at')
-            ->limit(10)
+            ->limit(5)
             ->get();
 
         if ($recentLogs->count() < 3) {
             return false;
         }
 
-        return $recentLogs->every(fn($log) => $log->temperature > 8.0);
+        return $recentLogs->every(fn($log) => $log->temperature > 6.0);
     }
 
     public function getStatus(float $temperature): string
