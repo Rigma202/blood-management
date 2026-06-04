@@ -19,7 +19,7 @@
 
         <tr>
             <th>Name</th>
-            <th>Serial Number</th>
+            <th>Reference Number</th>
             <th>Blood Bank</th>
             <th>Status</th>
             <th>Action</th>
@@ -117,15 +117,13 @@
 @push('scripts')
 
 <script>
-
-$(document).on('submit', '.delete-form', function(e){
-
+$(document).on('submit', '.delete-form', function(e) {
     e.preventDefault();
 
-    let form = this;
+    const form = this;
+    const url = $(form).attr('action');
 
     Swal.fire({
-
         title: 'Delete Refrigerator?',
         text: 'This refrigerator will be removed permanently.',
         icon: 'warning',
@@ -133,19 +131,46 @@ $(document).on('submit', '.delete-form', function(e){
         confirmButtonColor: '#d33',
         cancelButtonColor: '#3085d6',
         confirmButtonText: 'Yes, Delete'
-
     }).then((result) => {
-
-        if(result.isConfirmed){
-
-            form.submit();
-
+        if (!result.isConfirmed) {
+            return;
         }
 
+        $.ajax({
+            url: url,
+            type: 'DELETE',
+            dataType: 'json',
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            },
+            success: function(response) {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Deleted',
+                    text: response.message || 'Refrigerator deleted successfully.'
+                }).then(() => {
+                    window.location.reload();
+                });
+            },
+            error: function(xhr) {
+                if (xhr.status === 422 && xhr.responseJSON && xhr.responseJSON.message) {
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Cannot Delete',
+                        text: xhr.responseJSON.message
+                    });
+                    return;
+                }
+
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'Unable to delete refrigerator. Please try again.'
+                });
+            }
+        });
     });
-
 });
-
 </script>
 
 @endpush

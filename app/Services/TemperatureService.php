@@ -43,7 +43,7 @@ public function log(int $refrigeratorId,float $temperature, ?string $recordedAt 
 }
 
 
-    public function dailyAnalysis(int $refrigeratorId, ?string $date = null): array
+    public function dailyTempAnalysis(int $refrigeratorId, ?string $date = null): array
     {
         $date = $date ? Carbon::parse($date) : today();
 
@@ -86,11 +86,16 @@ public function log(int $refrigeratorId,float $temperature, ?string $recordedAt 
 
     public function getStatus(float $temperature): string
     {
-        return match(true) {
-            $temperature <= 6.0 => 'safe',
-            $temperature <= 8.0 => 'warning',
-            default             => 'critical',
-        };
+        if ($temperature >= 2 && $temperature <= 6) {
+            return 'safe';
+        }
+        if ($temperature > 6 && $temperature <= 8) {
+            return 'warning';
+        }
+        if ($temperature > 8) {
+            return 'critical';
+        }
+        return 'safe';
     }
 
 

@@ -53,38 +53,59 @@ protected TemperatureService $temperatureService;
     }
     public function edit(Refrigerator $refrigerator, Request $request)
     {
-        $user = $request->user();
-        abort_unless($user, 403);
+        $bloodBanks = $request->user()->bloodBanks;
 
-        $bloodBanks = $user->bloodBanks;
-
-        return view(
-            'staff.refrigerator-edit',
-            compact(
-                'refrigerator',
-                'bloodBanks'
-            )
-        );
+        return view('refrigerator.edit',compact(
+            'refrigerator',
+            'bloodBanks'
+        ));
     }
     public function update( UpdateRefrigeratorRequest $request, Refrigerator $refrigerator)
     {
-        $this->refrigeratorService
-            ->update(
-                $refrigerator,
-                $request->validated()
-            );
+        $data = $request->validated();
 
-        return response()->json([
-            'success' => true
-        ]);
-    }
-    public function destroy( Refrigerator $refrigerator )
+            $changingBloodBank = isset($data['blood_bank_id'])
+                && $data['blood_bank_id'] != $refrigerator->blood_bank_id;
+
+            $deactivating = array_key_exists('is_active', $data)
+                && $data['is_active'] == 0;
+
+            if ($changingBloodBank || $deactivating) {
+                $hasBlockedBags = $refrigerator->bloodBags()
+                    ->whereIn('status', ['available', 'reserved'])
+                    ->exists();
+
+                if ($hasBlockedBags) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'Cannot change blood bank or make inactive
+                        this refrigerator since it has available or reserved blood bags.'
+                    ], 422);
+                }
+            }
+
+            $this->refrigeratorService->update($refrigerator, $data);
+
+            return response()->json(['success' => true]);
+        }
+
+    public function destroy(Refrigerator $refrigerator)
     {
-        $this->refrigeratorService
-            ->delete($refrigerator);
+        $hasBlockedBags = $refrigerator->bloodBags()
+            ->whereIn('status', ['available', 'reserved'])
+            ->exists();
 
-        return redirect()
-            ->route('refrigerators.index');
+        if ($hasBlockedBags) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Cannot delete refrigerator while it has available or reserved blood bags.'
+            ], 422);
+        }
+        $this->refrigeratorService->delete($refrigerator);
+        return response()->json([
+            'success' => true,
+            'message' => 'Refrigerator deleted successfully.'
+        ]);
     }
      public function logsPage()
     {
@@ -119,7 +140,7 @@ protected TemperatureService $temperatureService;
             $selectedRefrigerator = Refrigerator::find($request->input('refrigerator_id'));
 
             if ($selectedRefrigerator) {
-                $analysis = $this->temperatureService->dailyAnalysis(
+                $analysis = $this->temperatureService->dailyTempAnalysis(
                     $selectedRefrigerator->id,
                     $request->input('date')
                 );
