@@ -6,6 +6,8 @@ use App\Models\BloodBag;
 use App\Models\Refrigerator;
 use App\Models\TemperatureLog;
 use Illuminate\Support\Collection;
+use App\Models\BloodBank;
+use App\Models\User;
 
 class DashboardService
 {
@@ -103,4 +105,48 @@ class DashboardService
             'active_fridges' => $this->getActiveRefrigerators(),
         ];
     }
+
+    public function getAdminDashboardSummary(): array
+    {
+        return [
+            'total_blood_banks'            => $this->getTotalBloodBanks(),
+            'banks_with_active_fridges'    => $this->getBanksWithActiveRefrigerators(),
+            'bank_with_max_refrigerators'  => $this->getBankWithMaximumRefrigerators(),
+            'total_staff_count'            => $this->getTotalStaffCount(),
+        ];
+    }
+
+    public function getTotalBloodBanks(): int
+    {
+        return BloodBank::count();
+    }
+
+    public function getBanksWithActiveRefrigerators(): int
+    {
+        return BloodBank::whereHas('refrigerators', function ($query) {
+            $query->where('is_active', true);
+        })->count();
+    }
+
+    public function getBankWithMaximumRefrigerators(): ?array
+    {
+        $bank = BloodBank::withCount('refrigerators')
+            ->orderByDesc('refrigerators_count')
+            ->first();
+
+        if (!$bank) {
+            return null;
+        }
+
+        return [
+            'name' => $bank->name,
+            'refrigerator_count' => $bank->refrigerators_count,
+        ];
+    }
+
+    public function getTotalStaffCount(): int
+    {
+        return User::where('role', 'staff')->count();
+    }
+
 }

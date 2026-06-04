@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\View\View;
 use App\Services\DashboardService;
+use App\Models\BloodBank;
 class ProfileController extends Controller
 {
     /**
@@ -23,16 +24,26 @@ class ProfileController extends Controller
     public function index(Request $request)
     {
         if (Auth::check()) {
-            $user = Auth::user();
-            $dashboardData = $this->dashboardService->getDashboardSummary();
 
-            return match ($user->role) {
-                'admin' => view('admin.dashboard', compact('dashboardData')),
-                'staff' => view('staff.dashboard', compact('dashboardData')),
-                'monitoring_user' => view('monitor-user.dashboard', compact('dashboardData')),
-                default => abort(403),
-            };
-        }
+        $user = Auth::user();
+        return match ($user->role) {
+            'admin' => view('admin.dashboard', [
+                'dashboardData' => $this->dashboardService->getAdminDashboardSummary(),
+                'bloodBanks' => BloodBank::orderBy('name')
+                    ->get(['id', 'name']),
+            ]),
+
+            'staff' => view('staff.dashboard', [
+                'dashboardData' => $this->dashboardService->getDashboardSummary()
+            ]),
+
+            'monitoring_user' => view('monitor-user.dashboard', [
+                'dashboardData' => $this->dashboardService->getDashboardSummary()
+            ]),
+
+            default => abort(403),
+        };
+    }
     }
     public function edit(Request $request): View
     {

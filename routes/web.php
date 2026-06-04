@@ -16,6 +16,8 @@ Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+    Route::get('/admin/blood-banks/{bloodBank}/staff',[BloodBankController::class, 'getBloodBankStaff']
+    )->name('admin.blood-banks.staff');
     Route::get('refrigerators/by-bank', [App\Http\Controllers\BloodBagController::class, 'refrigeratorsByBank'])
     ->name('refrigerators.byBank');
     Route::get('refrigerators/logs', [RefrigeratorController::class, 'logsPage'])

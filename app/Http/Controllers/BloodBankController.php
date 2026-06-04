@@ -104,4 +104,13 @@ class BloodBankController extends Controller
             'message' => 'Blood bank deleted successfully.'
         ]);
     }
+    public function getBloodBankStaff(BloodBank $bloodBank)
+    {
+        $staff = $bloodBank->users()
+            ->where('role', 'staff')
+            ->select('name', 'email')
+            ->get();
+
+        return response()->json($staff);
+    }
 }
