@@ -45,7 +45,8 @@
             <label class="form-label">Blood Bank</label>
 
             <select id="blood_bank_id"
-                    class="form-control select2">
+                    name="blood_bank_id[]"
+                    class="form-control select2" multiple>
 
                 <option value="">Select Blood Bank</option>
 

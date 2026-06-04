@@ -50,7 +50,10 @@ class StaffService
 
     public function update(User $user, array $data)
     {
+        $bloodBankIds = $data['blood_bank_id'] ?? [];
+        unset($data['blood_bank_id']);
         $user->update($data);
+        $user->bloodBanks()->sync($bloodBankIds);
         return $user;
     }
 
@@ -67,5 +70,10 @@ class StaffService
                 'blood_banks.location'
             )
             ->get();
+    }
+     public function getStaffWithBloodBanks($id)
+    {
+        return User::with('bloodBanks')
+            ->findOrFail($id);
     }
 }

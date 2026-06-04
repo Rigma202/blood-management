@@ -26,7 +26,8 @@ class StoreStaffRequest extends FormRequest
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email',
             'password' => 'required|min:8',
-            'blood_bank_id' => 'required|exists:blood_banks,id',
+            'blood_bank_id' => 'required|array',
+            'blood_bank_id.*' => 'exists:blood_banks,id',
         ];
     }
 }

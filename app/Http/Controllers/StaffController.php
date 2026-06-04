@@ -32,8 +32,9 @@ protected StaffService $staffService;
     }
     public function edit($id)
     {
-        $user = User::findOrFail($id);
-        return view('admin.staff-edit', compact('user'));
+        $staff = $this->staffService->getStaffWithBloodBanks($id);
+        $bloodBanks = $this->staffService->getAllBloodbanks();
+        return view('admin.staff-edit', compact('staff', 'bloodBanks'));
     }
     /**
      * Create blood bank
@@ -61,20 +62,18 @@ protected StaffService $staffService;
     /**
      * Update blood bank
      */
-    public function update(
-        UpdateStaffRequest $request,
-        User $user
-    ) {
-        $user = $this->staffService
+    public function update(UpdateStaffRequest $request, User $staff)
+    {
+        $staff = $this->staffService
             ->update(
-                $user,
+                $staff,
                 $request->validated()
             );
 
         return response()->json([
             'success' => true,
             'message' => 'Staff member updated successfully',
-            'data' => $user
+            'data' => $staff
         ]);
     }
 

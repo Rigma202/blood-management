@@ -12,7 +12,7 @@ class UpdateStaffRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -22,8 +22,14 @@ class UpdateStaffRequest extends FormRequest
      */
     public function rules(): array
     {
+        $routeModel = $this->route('staff') ?? $this->route('user');
+        $userId = is_object($routeModel) ? $routeModel->id : $routeModel;
+
         return [
-            //
+            'name' => 'required|string|max:255',
+            'email' => 'required|email|unique:users,email,' . $userId,
+            'blood_bank_id' => 'required|array',
+            'blood_bank_id.*' => 'exists:blood_banks,id',
         ];
     }
 }

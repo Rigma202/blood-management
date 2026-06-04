@@ -23,6 +23,7 @@
                         <th> Donor Name </th>
                         <th>Blood Group</th>
                         <th>Units</th>
+                        <th>Status</th>
                         <th>Collection Date</th>
                         <th>Expiry Date</th>
                         <th>Action</th>
@@ -37,7 +38,7 @@
                             <td>{{ $bag->donor_name }}</td>
                             <td>{{ $bag->blood_group }}</td>
                             <td>{{ $bag->quantity}}</td>
-                            <td>{{ $bag->collection_date->format('d M Y') }}</td>
+                            <td>{{$bag->status }}</td>                            <td>{{ $bag->collection_date->format('d M Y') }}</td>
                             <td>{{ $bag->expiry_date->format('d M Y') }}</td>
                             <td>
                                 <a href="{{ route('blood-bags.edit', $bag->id) }}" class="btn btn-warning btn-sm">
