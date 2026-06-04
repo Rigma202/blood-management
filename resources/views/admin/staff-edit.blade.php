@@ -127,14 +127,21 @@ $('#staffEditForm').submit(function(e){
 
         },
 
-        error: function(xhr){
+        error: function(xhr) {
+            const response = xhr.responseJSON || {};
 
-            let errors = xhr.responseJSON.errors;
-
-            $.each(errors, function(key, value){
-                $('#' + key + '_error').text(value[0]);
-            });
-
+            if (response.errors) {
+                $.each(response.errors, function(key, value) {
+                    $('#' + key + '_error').text(value[0]);
+                });
+            }
+            if (response.message) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Warning',
+                    text: response.message
+                });
+            }
         }
 
     });

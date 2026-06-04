@@ -63,17 +63,19 @@ class StaffService
     }
     public function getAssignedBloodBanks($id)
     {
-        return User::find($id)
-            ->bloodBanks()
-            ->select(
-                'blood_banks.name',
-                'blood_banks.location'
-            )
+        BloodBank::whereHas('users', fn($q) => $q->where('id', $id))
+            ->select('blood_banks.name', 'blood_banks.location')
             ->get();
     }
      public function getStaffWithBloodBanks($id)
     {
         return User::with('bloodBanks')
             ->findOrFail($id);
+    }
+    public function getBloodBanksWithActiveRefrigerators(array $bloodBankIds)
+    {
+        return BloodBank::whereIn('id', $bloodBankIds)
+            ->whereHas('refrigerators', fn ($q) => $q->where('is_active', true))
+            ->get();
     }
 }

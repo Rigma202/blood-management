@@ -6,7 +6,7 @@ use App\Http\Requests\UpdateStaffRequest;
 use App\Models\User;
 use App\Services\StaffService;
 use Illuminate\Support\Facades\Auth;
-
+use Illuminate\Http\Request;
 class StaffController extends Controller
 {
 protected StaffService $staffService;
@@ -64,27 +64,55 @@ protected StaffService $staffService;
      */
     public function update(UpdateStaffRequest $request, User $staff)
     {
-        $staff = $this->staffService
-            ->update(
-                $staff,
-                $request->validated()
-            );
+        $data = $request->validated();
+        $bloodBankIds = $data['blood_bank_id'] ?? [];
+        $currentIds = $staff->bloodBanks()->pluck('blood_banks.id')->toArray();
+        $removingIds = array_diff($currentIds, $bloodBankIds);
+
+        if (!empty($removingIds)) {
+            $blockedBanks =$this->staffService->getBloodBanksWithActiveRefrigerators($removingIds);
+            if ($blockedBanks->isNotEmpty()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Cannot remove staff.The blood bank has active refrigerators.',
+                    'blockedBanks' => $blockedBanks,
+                ], 422);
+            }
+        }
+
+        $staff = $this->staffService->update($staff, $data);
 
         return response()->json([
             'success' => true,
             'message' => 'Staff member updated successfully',
-            'data' => $staff
+            'data' => $staff,
         ]);
     }
 
     /**
      * Delete blood bank
      */
-    public function destroy(User $user)
-    {
-        $this->staffService->delete($user);
+public function destroy(Request $request, User $staff)
+{
 
-        return redirect()->route('staff.index')->with('success', 'Staff member deleted successfully');
+  $assignedBankIds = $staff->bloodBanks()->pluck('blood_banks.id')->toArray();
+
+        $blockedBanks =$this->staffService->getBloodBanksWithActiveRefrigerators($assignedBankIds);
+        if ($blockedBanks->isNotEmpty() && !$request->boolean('confirm', false)) {
+            return response()->json([
+                'success' => false,
+                'requiresConfirmation' => true,
+                'message' => 'This staff is assigned to blood bank(s) with active refrigerators.',
+                'blockedBanks' => $blockedBanks,
+            ]);
+        }
+
+        $this->staffService->delete($staff);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Staff member deleted successfully',
+        ]);
     }
     public function getStaffBloodBanks()
     {

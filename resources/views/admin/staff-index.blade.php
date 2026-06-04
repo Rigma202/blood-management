@@ -36,20 +36,18 @@
             <td>{{ $staff->email }}</td>
 
             <td>
-                <span class="badge bg-success">
+                <span>
                     {{ ucfirst($staff->role) }}
                 </span>
             </td>
 
             <td>
 
-                @foreach($staff->bloodBanks as $bloodBank)
-
-                    <span>
-                        {{ $bloodBank->name }}
-                    </span>
-
-                @endforeach
+            @foreach($staff->bloodBanks as $bloodBank)
+                <span>
+                    {{ $bloodBank->name }}@if(!$loop->last), @endif
+                </span>
+            @endforeach
 
             </td>
 
@@ -95,30 +93,55 @@
 
 <script>
 
-$(document).on('submit', '.delete-form', function(e){
-
+$(document).on('submit', '.delete-form', function(e) {
     e.preventDefault();
 
-    let form = this;
+    const form = this;
+    const url = $(form).attr('action');
 
-    Swal.fire({
-        title: "Delete Staff?",
-        text: "This staff user will be removed permanently.",
-        icon: "warning",
-        showCancelButton: true,
-        confirmButtonColor: "#d33",
-        cancelButtonColor: "#3085d6",
-        confirmButtonText: "Yes, Delete"
-    }).then((result) => {
+    $.ajax({
+        url: url,
+        type: 'DELETE',
+        headers: {
+            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+        },
+        success: function(response) {
+            if (response.requiresConfirmation) {
 
-        if(result.isConfirmed){
-            form.submit();
+                Swal.fire({
+                    title: 'Active refrigerators found',
+                    text: response.message + ' Proceed with deletion?',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonText: 'Proceed',
+                    cancelButtonText: 'Cancel'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        $.ajax({
+                            url: url,
+                            type: 'DELETE',
+                            headers: {
+                                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                            },
+                            data: { confirm: true },
+                            success: function(res) {
+                                Swal.fire('Deleted', res.message, 'success')
+                                    .then(() => location.reload());
+                            }
+                        });
+                    }
+                });
+                return;
+            }
+
+            Swal.fire('Deleted', response.message, 'success')
+                .then(() => location.reload());
+        },
+        error: function(xhr) {
+            Swal.fire('Error', 'Unable to delete staff.', 'error');
         }
-
     });
-
 });
-
 </script>
 
 @endpush
