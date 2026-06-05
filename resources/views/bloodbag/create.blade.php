@@ -33,7 +33,7 @@
                 </div>
 
                 <div class="col-md-6">
-                    <label class="form-label">Bag Number</label>
+                    <label class="form-label">Bag Reference Number</label>
                     <input type="text" name="bag_number" id="bag_number" class="form-control form-control-sm">
                     <small class="text-danger" id="bag_number_error"></small>
                 </div>
@@ -85,7 +85,7 @@
                         <input class="form-check-input" type="checkbox" id="is_tested" name="is_tested" value="1">
                         <label class="form-check-label" for="is_tested">Blood tested</label>
                     </div>
-                    <small class="text-danger" id="is_tested_error"></small>
+
                 </div>
 
                 <div class="col-md-6">
@@ -93,7 +93,7 @@
                         <input class="form-check-input" type="checkbox" id="is_secure" name="is_secure" value="1">
                         <label class="form-check-label" for="is_secure">Secure for donation</label>
                     </div>
-                    <small class="text-danger" id="is_secure_error"></small>
+
                 </div>
 
                 <div class="col-12 text-center mt-3">
@@ -160,7 +160,6 @@ $('#bloodBagForm').submit(function(e){
         url: "/blood-bags",
         type: "POST",
         data: {
-            refrigerator_id: $('#refrigerator_id').val(),
             bag_number: $('#bag_number').val(),
             donor_name: $('#donor_name').val(),
             blood_group: $('#blood_group').val(),

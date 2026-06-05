@@ -57,7 +57,6 @@ class BloodBagService
     public function update(BloodBag $bloodBag, array $data)
     {
         $bloodBag->update([
-            'refrigerator_id' => $data['refrigerator_id'],
             'bag_number'      => $data['bag_number'],
             'blood_group'     => $data['blood_group'],
             'donor_name'      => $data['donor_name'],
@@ -65,11 +64,11 @@ class BloodBagService
             'expiry_date'     => $data['expiry_date'],
             'quantity'        => $data['quantity'],
             'status'          => $data['status'],
-            'is_tested'       => $data['is_tested'] ?? $bloodBag->is_tested,
-            'is_secure'       => $data['is_secure'] ?? $bloodBag->is_secure
+            'is_tested'       => $data['is_tested'] ?? false,
+            'is_secure'       => $data['is_secure'] ?? false,
         ]);
 
-        return $bloodBag;
+        return $bloodBag->fresh(['refrigerator.bloodBank']);
     }
 
     public function delete(BloodBag $bloodBag)

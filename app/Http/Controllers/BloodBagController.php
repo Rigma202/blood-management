@@ -10,6 +10,7 @@ use App\Models\BloodBag;
 use App\Http\Requests\StoreBloodBagRequest;
 use App\Http\Requests\UpdateBloodBagRequest;
 use App\Services\BloodExpiryService;
+use App\Models\BloodBank;
 
 class BloodBagController extends Controller
 {
@@ -34,7 +35,13 @@ class BloodBagController extends Controller
         $bloodBanks = $this->service->getUserBloodBanksWithRefrigerators($userId);
         return view('bloodbag.create', compact('bloodBanks'));
     }
+    public function edit(BloodBag $bloodBag)
+    {
 
+        $bloodBag->load('refrigerator.bloodBank');
+
+        return view('bloodbag.edit', compact('bloodBag'));
+    }
     public function refrigeratorsByBank(Request $request)
     {
         $request->validate([

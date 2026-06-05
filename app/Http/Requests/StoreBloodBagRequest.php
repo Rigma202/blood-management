@@ -60,12 +60,10 @@ class StoreBloodBagRequest extends FormRequest
             ],
 
             'is_tested' => [
-                'required',
                 'accepted'
             ],
 
             'is_secure' => [
-                'required',
                 'accepted'
             ]
         ];
