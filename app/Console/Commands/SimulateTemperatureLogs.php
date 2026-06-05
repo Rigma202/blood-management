@@ -49,19 +49,14 @@ class SimulateTemperatureLogs extends Command
         $this->info("Bulk generating {$minutes} minutes of data...");
 
         foreach ($refrigerators as $fridge) {
-            $bar = $this->output->createProgressBar($minutes);
             $this->info("\n Fridge: {$fridge->name}");
-            $bar->start();
 
             for ($i = $minutes; $i >= 1; $i--) {
                 $temp       = $this->simulator->generateTemperature($fridge->id);
                 $recordedAt = now()->subMinutes($i);
 
                 $this->temperatureService->log($fridge->id, $temp, $recordedAt);
-                $bar->advance();
             }
-
-            $bar->finish();
         }
 
         $this->info("\n Done! {$minutes} readings generated per refrigerator.");

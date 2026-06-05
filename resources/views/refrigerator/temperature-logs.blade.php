@@ -6,13 +6,21 @@
 
     <div class="mb-3">
         <label class="form-label">Select Refrigerator</label>
-        <select id="refrigerator_id" class="form-select">
-            <option value="">Choose refrigerator</option>
+        <select
+            id="refrigerator_id"
+            name="refrigerator_id"
+            class="form-select select2">
+
+            <option value="">
+                Choose refrigerator
+            </option>
+
             @foreach($refrigerators as $refrigerator)
                 <option value="{{ $refrigerator->id }}">
                     {{ $refrigerator->name }} — {{ $refrigerator->serial_number }}
                 </option>
             @endforeach
+
         </select>
     </div>
 
@@ -37,6 +45,16 @@
 
 @push('scripts')
 <script>
+$(document).ready(function () {
+
+    $('#refrigerator_id').select2({
+        placeholder: 'Choose refrigerator',
+        allowClear: true,
+        minimumResultsForSearch: 0,
+        width: '100%'
+    });
+
+});
 $('#refrigerator_id').on('change', function () {
     const refrigeratorId = $(this).val();
     const $body = $('#temperatureLogsBody');

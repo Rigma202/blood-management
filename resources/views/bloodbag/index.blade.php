@@ -46,14 +46,14 @@
                                 </a>
 
                                 <form action="{{ route('blood-bags.destroy', $bag->id) }}"
-                                      method="POST"
-                                      class="delete-bloodbag-form"
-                                      style="display:inline-block;">
+                                    method="POST"
+                                    data-status="{{ $bag->status }}"
+                                    class="delete-bloodbag-form"
+                                    style="display:inline-block;">
                                     @csrf
                                     @method('DELETE')
 
-                                    <button type="submit"
-                                            class="btn btn-danger btn-sm">
+                                    <button type="submit" class="btn btn-danger btn-sm">
                                         Delete
                                     </button>
                                 </form>
@@ -80,25 +80,38 @@
 
 @push('scripts')
 <script>
+
 $(function () {
-    $('form.delete-bloodbag-form').submit(function (e) {
+
+    $('form.delete-bloodbag-form').on('submit', function (e) {
         e.preventDefault();
 
         const $form = $(this);
+        const status = $form.data('status');
+
+        const isSafe = (status === 'expired' || status === 'dispatched');
+
+        let text = '';
+
+        if (isSafe) {
+            text = `Are you sure you want to delete this ${status} blood bag?`;
+        } else {
+            text = `This blood bag is currently "${status}". Are you sure you want to delete it?`;
+        }
 
         Swal.fire({
-            title: 'Delete blood bag?',
-            text: 'Only expired blood bags may be deleted.',
+            title: 'Confirm Delete',
+            text: text,
             icon: 'warning',
             showCancelButton: true,
             confirmButtonColor: '#d33',
-            confirmButtonText: 'Yes, delete it',
-            cancelButtonText: 'Cancel'
+            cancelButtonText: 'Cancel',
+            confirmButtonText: isSafe ? 'Yes, delete it' : 'Proceed Anyway'
         }).then((result) => {
-            if (!result.isConfirmed) {
-                return;
-            }
 
+            if (!result.isConfirmed) return;
+
+            // final AJAX call
             $.ajax({
                 url: $form.attr('action'),
                 type: 'POST',
@@ -111,22 +124,23 @@ $(function () {
                     Swal.fire({
                         icon: 'success',
                         title: 'Deleted',
-                        text: response.message || 'Blood bag deleted successfully'
+                        text: response.message
                     }).then(() => {
                         location.reload();
                     });
                 },
                 error: function (xhr) {
-                    const data = xhr.responseJSON || {};
                     Swal.fire({
                         icon: 'error',
-                        title: 'Unable to delete',
-                        text: data.message || 'Only expired blood bags can be deleted.'
+                        title: 'Error',
+                        text: xhr.responseJSON?.message || 'Something went wrong'
                     });
                 }
             });
+
         });
     });
+
 });
 </script>
 @endpush

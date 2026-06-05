@@ -109,7 +109,7 @@ protected TemperatureService $temperatureService;
     }
      public function logsPage()
     {
-        $refrigerators = Refrigerator::where('is_active', true)->get();
+        $refrigerators = Refrigerator::all();
         return view('refrigerator.temperature-logs', compact('refrigerators'));
     }
         public function logsData(Refrigerator $refrigerator)

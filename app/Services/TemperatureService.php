@@ -10,8 +10,8 @@ use App\Jobs\SendCriticalTemperatureAlertJob;
 use App\Models\TemperatureAlert;
 class TemperatureService
 {
- 
-public function log(int $refrigeratorId,float $temperature, ?string $recordedAt = null): TemperatureLog 
+
+public function log(int $refrigeratorId,float $temperature, ?string $recordedAt = null): TemperatureLog
 {
     $log = TemperatureLog::create([
         'refrigerator_id' => $refrigeratorId,
@@ -74,14 +74,14 @@ public function log(int $refrigeratorId,float $temperature, ?string $recordedAt 
     {
         $recentLogs = TemperatureLog::where('refrigerator_id', $refrigeratorId)
             ->orderByDesc('recorded_at')
-            ->limit(5)
+            ->limit(10)
             ->get();
 
         if ($recentLogs->count() < 3) {
             return false;
         }
 
-        return $recentLogs->every(fn($log) => $log->temperature > 6.0);
+        return $recentLogs->every(fn($log) => $log->temperature > 8.0);
     }
 
     public function getStatus(float $temperature): string

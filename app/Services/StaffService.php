@@ -62,9 +62,9 @@ class StaffService
     }
     public function getAssignedBloodBanks($id)
     {
-        BloodBank::whereHas('users', fn($q) => $q->where('id', $id))
-            ->select('blood_banks.name', 'blood_banks.location')
-            ->get();
+       return User::findOrFail($id)
+                    ->bloodBanks()
+                    ->get();
     }
      public function getStaffWithBloodBanks($id)
     {
