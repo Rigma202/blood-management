@@ -14,7 +14,7 @@ class StaffService
     }
     public function getAllBloodbanks()
     {
-        return BloodBank::all();//addstatuschecking
+        return BloodBank::all();
     }
     public function create(array $data)
     {

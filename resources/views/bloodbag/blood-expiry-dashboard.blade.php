@@ -8,7 +8,7 @@
         <div class="row g-3 align-items-end">
             <div class="col-md-6">
                 <label class="form-label">Refrigerator</label>
-                <select name="refrigerator_id" class="form-select">
+                <select name="refrigerator_id" class="form-select select2">
                     <option value="">Select refrigerator</option>
                     @foreach($refrigerators as $refrigerator)
                         <option value="{{ $refrigerator->id }}"
@@ -117,3 +117,14 @@
     @endif
 </div>
 @endsection
+@push('scripts')
+<script>
+$(document).ready(function () {
+    $('.select2').select2({
+        width: '100%',
+        placeholder: "Select refrigerator",
+        allowClear: true
+    });
+});
+</script>
+@endpush

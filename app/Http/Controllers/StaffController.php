@@ -52,14 +52,6 @@ protected StaffService $staffService;
     }
 
     /**
-     * Show single blood bank
-     */
-    public function show()
-    {
-        //
-    }
-
-    /**
      * Update blood bank
      */
     public function update(UpdateStaffRequest $request, User $staff)
