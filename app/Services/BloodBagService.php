@@ -9,10 +9,14 @@ class BloodBagService
 {
     public function getAll()
     {
-        return BloodBag::with([
-            'refrigerator',
-            'refrigerator.bloodBank'
-        ])->get();
+        $bloodBankIds = auth()->user()->bloodBanks()->pluck('blood_banks.id');
+
+        return BloodBag::whereHas('refrigerator', function ($q) use ($bloodBankIds) {
+                            $q->whereIn('blood_bank_id', $bloodBankIds);
+                        })
+                        ->with(['refrigerator.bloodBank'])
+                        ->get();
+
     }
 
     public function getUserBloodBanksWithRefrigerators(int $userId)

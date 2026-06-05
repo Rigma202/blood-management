@@ -60,15 +60,5 @@ class User extends Authenticatable
     {
         return $this->role == 'staff';
     }
-    public function refrigerators()
-    {
-        return $this->hasManyThrough(
-            Refrigerator::class,
-            BloodBankUser::class,
-            'user_id',
-            'blood_bank_id',
-            'id',
-            'blood_bank_id'
-        );
-    }
+
 }

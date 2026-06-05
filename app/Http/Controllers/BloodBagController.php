@@ -37,9 +37,7 @@ class BloodBagController extends Controller
     }
     public function edit(BloodBag $bloodBag)
     {
-
         $bloodBag->load('refrigerator.bloodBank');
-
         return view('bloodbag.edit', compact('bloodBag'));
     }
     public function refrigeratorsByBank(Request $request)

@@ -45,12 +45,26 @@
                     <small class="text-danger" id="donor_name_error"></small>
                 </div>
 
-                <div class="col-md-6">
-                    <label>Blood Group</label>
-                    <input type="text" id="blood_group" class="form-control"
-                        value="{{ $bloodBag->blood_group }}">
-                    <small class="text-danger" id="blood_group_error"></small>
-                </div>
+            <div class="col-md-6">
+                <label>Blood Group</label>
+                <select id="blood_group" class="form-control">
+                    <option value="">Select blood group</option>
+
+                    <option value="A+" {{ $bloodBag->blood_group == 'A+' ? 'selected' : '' }}>A+</option>
+                    <option value="A-" {{ $bloodBag->blood_group == 'A-' ? 'selected' : '' }}>A-</option>
+
+                    <option value="B+" {{ $bloodBag->blood_group == 'B+' ? 'selected' : '' }}>B+</option>
+                    <option value="B-" {{ $bloodBag->blood_group == 'B-' ? 'selected' : '' }}>B-</option>
+
+                    <option value="AB+" {{ $bloodBag->blood_group == 'AB+' ? 'selected' : '' }}>AB+</option>
+                    <option value="AB-" {{ $bloodBag->blood_group == 'AB-' ? 'selected' : '' }}>AB-</option>
+
+                    <option value="O+" {{ $bloodBag->blood_group == 'O+' ? 'selected' : '' }}>O+</option>
+                    <option value="O-" {{ $bloodBag->blood_group == 'O-' ? 'selected' : '' }}>O-</option>
+                </select>
+
+                <small class="text-danger" id="blood_group_error"></small>
+            </div>
 
                 <div class="col-md-6">
                     <label>Quantity</label>

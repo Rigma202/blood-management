@@ -46,7 +46,19 @@
 
                 <div class="col-md-6">
                     <label class="form-label">Blood Group</label>
-                    <input type="text" name="blood_group" id="blood_group" class="form-control form-control-sm">
+                    <select name="blood_group" id="blood_group" class="form-control form-control-sm">
+                        <option value="">Select blood group</option>
+
+                        <option value="A+">A+</option>
+                        <option value="A-">A-</option>
+                        <option value="B+">B+</option>
+                        <option value="B-">B-</option>
+                        <option value="AB+">AB+</option>
+                        <option value="AB-">AB-</option>
+                        <option value="O+">O+</option>
+                        <option value="O-">O-</option>
+                    </select>
+
                     <small class="text-danger" id="blood_group_error"></small>
                 </div>
 
