@@ -13,24 +13,38 @@ class DashboardService
 {
     public function getTotalBloodBags(): int
     {
-        return BloodBag::count();
+        $userId = auth()->id();
+
+        return BloodBag::whereHas('refrigerator.bloodBank.users', function ($q) use ($userId) {
+            $q->where('users.id', $userId);
+        })->count();
     }
 
     public function getStockByBloodGroup(): Collection
     {
-        return BloodBag::selectRaw('blood_group, SUM(quantity) as quantity')
-                ->groupBy('blood_group')
-                ->get();
+        $userId = auth()->id();
+
+        return BloodBag::query()
+            ->whereHas('refrigerator.bloodBank.users', function ($query) use ($userId) {
+                $query->where('users.id', $userId);
+            })
+            ->selectRaw('blood_group, SUM(quantity) as quantity')
+            ->groupBy('blood_group')
+            ->get();
     }
 
     public function getRefrigeratorHealthScore(): float
     {
+        $userId = auth()->id();
+
         $refrigerators = Refrigerator::where('is_active', true)
+            ->whereHas('bloodBank.users', function ($query) use ($userId) {
+                $query->where('users.id', $userId);
+            })
             ->with('temperatureLogs')
             ->get();
-
         if ($refrigerators->isEmpty()) {
-            return 100.0;
+            return 0.0;
         }
 
         $totalReadings = 0;
@@ -54,37 +68,65 @@ class DashboardService
 
     public function getCriticalTemperatureAlerts(): Collection
     {
-        return TemperatureLog::whereHas('refrigerator', fn($q) => $q->where('is_active', true))
-            ->where('temperature', '>', 8.0)
-            ->whereDate('recorded_at', today())
-            ->with('refrigerator')
-            ->latest('recorded_at')
-            ->limit(10)
-            ->get()
-            ->map(fn($log) => [
-                'refrigerator_name' => $log->refrigerator->name,
-                'temperature' => $log->temperature,
-                'recorded_at' => $log->recorded_at->format('H:i:s'),
-                'status' => 'Critical',
-            ]);
+        $userId = auth()->id();
+
+            return TemperatureLog::query()
+                ->where('temperature', '>', 8.0)
+                ->whereDate('recorded_at', today())
+                ->whereHas('refrigerator', function ($query) use ($userId) {
+                    $query->where('is_active', true)
+                        ->whereHas('bloodBank.users', function ($q) use ($userId) {
+                            $q->where('users.id', $userId);
+                        });
+                })
+                ->with('refrigerator:id,name')
+                ->latest('recorded_at')
+                ->limit(10)
+                ->get()
+                ->map(fn ($log) => [
+                    'refrigerator_name' => $log->refrigerator->name,
+                    'temperature'       => $log->temperature,
+                    'recorded_at'       => $log->recorded_at->format('H:i:s'),
+                    'status'            => 'Critical',
+                ]);
     }
 
     public function getAverageTemperatureToday(): ?float
     {
-        $average = TemperatureLog::whereDate('recorded_at', today())
-            ->avg('temperature');
+    $userId = auth()->id();
 
-        return $average ? round($average, 2) : null;
+    $average = TemperatureLog::query()
+        ->whereDate('recorded_at', today())
+        ->whereHas('refrigerator.bloodBank.users', function ($query) use ($userId) {
+            $query->where('users.id', $userId);
+        })
+        ->avg('temperature');
+
+    return $average ? round($average, 2) : null;
     }
 
     public function getTotalExpiredBags(): int
     {
-        return BloodBag::whereDate('expiry_date', '<', today())->count();
+            $userId = auth()->id();
+
+            return BloodBag::query()
+                ->whereDate('expiry_date', '<', today())
+                ->whereHas('refrigerator.bloodBank.users', function ($query) use ($userId) {
+                    $query->where('users.id', $userId);
+                })
+                ->count();
     }
 
     public function getActiveRefrigerators(): int
     {
-        return Refrigerator::where('is_active', true)->count();
+            $userId = auth()->id();
+
+            return Refrigerator::query()
+                ->where('is_active', true)
+                ->whereHas('bloodBank.users', function ($query) use ($userId) {
+                    $query->where('users.id', $userId);
+                })
+                ->count();
     }
 
     public function getDashboardSummary(): array
