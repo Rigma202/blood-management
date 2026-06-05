@@ -25,9 +25,10 @@ protected TemperatureService $temperatureService;
     }
     public function index()
     {
-        $refrigerators =
-            $this->refrigeratorService
-                ->getAll();
+        $bloodBankIds = auth()->user()->bloodBanks()->pluck('blood_banks.id');
+        $refrigerators = Refrigerator::whereIn('blood_bank_id', $bloodBankIds)
+                        ->where('is_active', true)
+                        ->paginate(10);
 
         return view('refrigerator.index',compact('refrigerators'));
     }
@@ -109,7 +110,11 @@ protected TemperatureService $temperatureService;
     }
      public function logsPage()
     {
-        $refrigerators = Refrigerator::all();
+    $bloodBankIds = auth()->user()->bloodBanks()->pluck('blood_banks.id');
+
+    $refrigerators = Refrigerator::whereIn('blood_bank_id', $bloodBankIds)
+        ->where('is_active', true)
+        ->get();
         return view('refrigerator.temperature-logs', compact('refrigerators'));
     }
         public function logsData(Refrigerator $refrigerator)
@@ -130,7 +135,7 @@ protected TemperatureService $temperatureService;
     }
         public function dailyAnalysis(Request $request)
     {
-        $refrigerators = Refrigerator::where('is_active', true)->get();
+
 
         $selectedRefrigerator = null;
         $analysis = null;
@@ -158,7 +163,11 @@ protected TemperatureService $temperatureService;
                     });
             }
         }
+        $bloodBankIds = auth()->user()->bloodBanks()->pluck('blood_banks.id');
 
+        $refrigerators = Refrigerator::whereIn('blood_bank_id', $bloodBankIds)
+            ->where('is_active', true)
+            ->get();
         return view('refrigerator.daily-analysis', compact(
             'refrigerators',
             'selectedRefrigerator',

@@ -41,6 +41,7 @@ class BloodBagService
     public function create(array $data)
     {
         return BloodBag::create([
+            'created_by'      => auth()->id(),
             'refrigerator_id' => $data['refrigerator_id'],
             'bag_number'      => $data['bag_number'],
             'blood_group'     => $data['blood_group'],

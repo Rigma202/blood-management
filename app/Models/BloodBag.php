@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class BloodBag extends Model
 {
     protected $fillable = [
+        'created_by',
         'refrigerator_id',
         'bag_number',
         'blood_group',
@@ -29,5 +30,9 @@ class BloodBag extends Model
     public function refrigerator()
     {
         return $this->belongsTo(Refrigerator::class);
+    }
+    public function creator()
+    {
+        return $this->belongsTo(User::class, 'created_by');
     }
 }

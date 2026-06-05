@@ -26,6 +26,7 @@
                         <th>Status</th>
                         <th>Collection Date</th>
                         <th>Expiry Date</th>
+                        <th>Created by</th>
                         <th>Action</th>
                     </tr>
                 </thead>
@@ -40,6 +41,7 @@
                             <td>{{ $bag->quantity}}</td>
                             <td>{{$bag->status }}</td>                            <td>{{ $bag->collection_date->format('d M Y') }}</td>
                             <td>{{ $bag->expiry_date->format('d M Y') }}</td>
+                            <td>{{ $bag->creator?->name ?? 'System' }}</td>
                             <td>
                                 <a href="{{ route('blood-bags.edit', $bag->id) }}" class="btn btn-warning btn-sm">
                                     Edit

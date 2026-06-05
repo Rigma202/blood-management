@@ -160,6 +160,7 @@ $('#bloodBagForm').submit(function(e){
         url: "/blood-bags",
         type: "POST",
         data: {
+            refrigerator_id: $('#refrigerator_id').val(),
             bag_number: $('#bag_number').val(),
             donor_name: $('#donor_name').val(),
             blood_group: $('#blood_group').val(),
