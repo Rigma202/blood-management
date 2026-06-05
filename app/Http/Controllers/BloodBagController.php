@@ -53,7 +53,10 @@ class BloodBagController extends Controller
 
         return response()->json($refrigerators);
     }
-
+    public function findById($id)
+    {
+        return $this->service->findById($id);
+    }
     public function store(StoreBloodBagRequest $request)
     {
         $data = $request->validated();
@@ -78,10 +81,6 @@ class BloodBagController extends Controller
             ->with('success', 'Blood bag updated successfully');
     }
 
-    public function delete(BloodBag $bloodBag)
-    {
-        return $this->destroy(request(), $bloodBag);
-    }
 
 public function destroy(Request $request, BloodBag $bloodBag)
 {
@@ -93,30 +92,30 @@ public function destroy(Request $request, BloodBag $bloodBag)
     ]);
 }
 
-    public function findById($id)
-    {
-        return $this->service->findById($id);
-    }
-     public function expiryDashboard(Request $request)
-    {
-        $userId = Auth::id();
-        $bloodBanks = $this->service->getUserBloodBanksWithRefrigerators($userId);
-        $refrigerators = $bloodBanks->flatMap(fn($bank) => $bank->refrigerators);
-        $selectedRefrigerator = null;
-        $summary = null;
 
-        if ($request->filled('refrigerator_id')) {
-            $selectedRefrigerator = Refrigerator::find($request->input('refrigerator_id'));
-            if ($selectedRefrigerator) {
-                $summary = $this->expiryService->summary($selectedRefrigerator);
-            }
+public function expiryDashboard(Request $request)
+{
+    $userId = Auth::id();
+    $refrigerators = $this->service->getRefrigeratorDropdownForUser($userId);
+
+    $selectedRefrigerator = null;
+    $summary = null;
+
+    if ($request->filled('refrigerator_id')) {
+
+        $selectedRefrigerator = $this->service
+            ->findUserRefrigerator($userId, $request->refrigerator_id);
+
+        if ($selectedRefrigerator) {
+            $summary = $this->expiryService->summary($selectedRefrigerator);
         }
-
-        return view('bloodbag.blood-expiry-dashboard', compact(
-            'refrigerators',
-            'selectedRefrigerator',
-            'summary'
-        ));
     }
+
+    return view('bloodbag.blood-expiry-dashboard', compact(
+        'refrigerators',
+        'selectedRefrigerator',
+        'summary'
+    ));
+}
 
 }

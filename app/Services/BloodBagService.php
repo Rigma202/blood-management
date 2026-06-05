@@ -4,7 +4,7 @@ namespace App\Services;
 
 use App\Models\BloodBag;
 use App\Models\BloodBank;
-
+use App\Models\Refrigerator;
 class BloodBagService
 {
     public function getAll()
@@ -26,6 +26,23 @@ class BloodBagService
         })->with(['refrigerators' => function ($q) {
             $q->where('is_active', true);
         }])->get();
+    }
+    public function getRefrigeratorDropdownForUser(int $userId)
+    {
+        return Refrigerator::whereHas('bloodBank.users', function ($q) use ($userId) {
+                $q->where('users.id', $userId);
+            })
+            ->where('is_active', true)
+            ->select('id', 'name', 'serial_number')
+            ->get();
+    }
+    public function findUserRefrigerator(int $userId, int $refrigeratorId)
+    {
+        return Refrigerator::where('id', $refrigeratorId)
+            ->whereHas('bloodBank.users', function ($q) use ($userId) {
+                $q->where('users.id', $userId);
+            })
+            ->first();
     }
 
     public function getRefrigeratorsForUserAndBank(int $userId, int $bloodBankId)
