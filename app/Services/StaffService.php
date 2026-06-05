@@ -21,11 +21,10 @@ class StaffService
             DB::beginTransaction();
             try {
 
-                $plainPassword = $data['password'];
                 $user = User::create([
                     'name' => $data['name'],
                     'email' => $data['email'],
-                    'password' => bcrypt($plainPassword),
+                    'password' => "Staff@123",
                     'role' => 'staff',
                 ]);
                 $user->bloodBanks()->attach(
@@ -35,7 +34,7 @@ class StaffService
                     ->queue(
                         new StaffCredentialsMail(
                             $user,
-                            $plainPassword
+                            "Staff@123"
                         )
                     );
 

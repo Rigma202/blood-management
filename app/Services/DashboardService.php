@@ -18,15 +18,9 @@ class DashboardService
 
     public function getStockByBloodGroup(): Collection
     {
-        return BloodBag::all()
-            ->groupBy('blood_group')
-            ->map(function ($bags, $bloodGroup) {
-                return [
-                    'blood_group' => $bloodGroup,
-                    'quantity'    => (int) $bags->sum('quantity'),
-                ];
-            })
-            ->values();
+        return BloodBag::selectRaw('blood_group, SUM(quantity) as quantity')
+                ->groupBy('blood_group')
+                ->get();
     }
 
     public function getRefrigeratorHealthScore(): float

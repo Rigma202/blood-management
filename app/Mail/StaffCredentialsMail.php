@@ -28,7 +28,7 @@ class StaffCredentialsMail extends Mailable implements ShouldQueue
     public function build()
     {
         return $this
-            ->subject('Staff Account Created')
+            ->subject('Welcome !! Staff Account Created')
             ->view('emails.staff-credentials');
     }
 }

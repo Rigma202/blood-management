@@ -26,20 +26,6 @@
             <small class="text-danger" id="email_error"></small>
         </div>
 
-        <div class="mb-3">
-            <label class="form-label">Password</label>
-            <input type="password"
-                   id="password"
-                   class="form-control form-control-sm">
-            <small class="text-danger" id="password_error"></small>
-        </div>
-
-        <div class="mb-3">
-            <label class="form-label">Confirm Password</label>
-            <input type="password"
-                   id="password_confirmation"
-                   class="form-control form-control-sm">
-        </div>
 
         <div class="mb-3">
             <label class="form-label">Blood Bank</label>
@@ -106,8 +92,6 @@ $('#staffForm').submit(function(e){
         data:{
             name:$('#name').val(),
             email:$('#email').val(),
-            password:$('#password').val(),
-            password_confirmation:$('#password_confirmation').val(),
             blood_bank_id:$('#blood_bank_id').val()
         },
 
